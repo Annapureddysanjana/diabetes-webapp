@@ -4,8 +4,9 @@ import numpy as np
 import joblib
 
 # Load saved model and scaler
-model = joblib.load('diabetes_model.pkl')
-scaler = joblib.load('scaler.pkl')
+model = joblib.load('anaconda/diabetes_model.pkl')
+scaler = joblib.load('anaconda/scaler.pkl')
+
 
 st.title("🩺 Diabetes Prediction App")
 
