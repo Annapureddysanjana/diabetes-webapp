@@ -1,33 +1,51 @@
-# app.py (save this file in your project folder)
 import streamlit as st
 import numpy as np
 import joblib
 
-# Load saved model and scaler
+# Load model
 model = joblib.load('anaconda/diabetes_model.pkl')
 scaler = joblib.load('anaconda/scaler.pkl')
 
 
+# Set page config
+st.set_page_config(page_title="Diabetes Prediction", page_icon="🩺", layout="centered")
+
+# Custom CSS for styling
+st.markdown("""
+    <style>
+    .main {
+        background-color: #121212;
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    input, .stNumberInput input {
+        background-color: #333;
+        color: white;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 st.title("🩺 Diabetes Prediction App")
+st.markdown("#### Enter the patient data below to check the likelihood of diabetes.")
 
-# Collect input from user
-pregnancies = st.number_input("Pregnancies", min_value=0)
-glucose = st.number_input("Glucose", min_value=0)
-bp = st.number_input("Blood Pressure", min_value=0)
-skin = st.number_input("Skin Thickness", min_value=0)
-insulin = st.number_input("Insulin", min_value=0)
-bmi = st.number_input("BMI", min_value=0.0)
-dpf = st.number_input("Diabetes Pedigree Function", min_value=0.0)
-age = st.number_input("Age", min_value=1)
+# User inputs
+pregnancies = st.number_input("Pregnancies", 0, 20, step=1)
+glucose = st.number_input("Glucose", 0, 200)
+bp = st.number_input("Blood Pressure", 0, 122)
+skin = st.number_input("Skin Thickness", 0, 100)
+insulin = st.number_input("Insulin", 0, 846)
+bmi = st.number_input("BMI", 0.0, 67.1)
+dpf = st.number_input("Diabetes Pedigree Function", 0.0, 2.5)
+age = st.number_input("Age", 0, 120, step=1)
 
-# Prediction
 if st.button("Predict"):
-    input_data = np.array([[pregnancies, glucose, bp, skin, insulin, bmi, dpf, age]])
-    input_scaled = scaler.transform(input_data)
-    prediction = model.predict(input_scaled)
+    data = np.array([[pregnancies, glucose, bp, skin, insulin, bmi, dpf, age]])
+    # If you used a scaler during training
+    data = scaler.transform(data)
+    result = model.predict(data)
 
-    if prediction[0] == 1:
-        st.error("⚠️ Likely to have diabetes.")
+    st.subheader("🧬 Prediction Result:")
+    if result[0] == 1:
+        st.error("⚠️ The person is likely to have diabetes.")
     else:
-        st.success("✅ Not likely to have diabetes.")
-
+        st.success("✅ The person is unlikely to have diabetes.")
